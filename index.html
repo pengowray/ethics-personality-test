@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Your Moral Compass — a morality personality quiz</title>
+  <meta name="description" content="A morality personality quiz. Meet a cast of very specific people facing the same situations, decide whose move is yours, and get your moral compass and archetype." />
+  <script>
+    (function () {
+      try {
+        var t = localStorage.getItem('mc_theme');
+        if (t !== 'dark' && t !== 'light') t = (window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
+        document.documentElement.setAttribute('data-theme', t);
+      } catch (e) {}
+    })();
+  </script>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<button id="themeToggle" class="theme-toggle" type="button" aria-label="Switch theme"><span class="ti">☾</span></button>
+<div class="wrap">
+
+  <!-- ============================ INTRO ============================ -->
+  <section id="screen-intro" class="screen active">
+    <div class="hero">
+      <span class="eyebrow">A morality personality quiz</span>
+      <h1>Where does your<br />moral compass point?</h1>
+      <p class="lede">
+        Not “what would you do?” but “whose move is yours?” Each question hands you a small cast of
+        very specific people facing the same situation. You decide whose reasoning you recognise.
+        At the end: your compass across five axes, and the moral archetype you earned.
+      </p>
+
+      <div class="facts">
+        <div class="fact"><b id="factCount">12</b><span>situations</span></div>
+        <div class="fact"><b>5</b><span>axes of a compass</span></div>
+        <div class="fact"><b>~7 min</b><span>or stop anytime</span></div>
+        <div class="fact"><b>1</b><span>archetype + a shareable compass</span></div>
+      </div>
+
+      <div class="btn-row">
+        <button id="startBtn" class="btn btn-primary">Begin ›</button>
+        <button id="resultsTopBtn" class="btn btn-ghost">Skip to results</button>
+      </div>
+
+      <div id="resumeRow" class="btn-row" style="display:none; margin-top:14px">
+        <span class="note" style="margin:0; align-self:center">
+          <span id="resumeText"></span>
+          <button id="resumeBtn" class="link-btn">Resume ›</button>
+          <button id="introReset" class="link-btn">Start over</button>
+        </span>
+      </div>
+
+      <p class="note">
+        For each person you can <b>lean</b> their way (one click) or commit with <b>conviction</b>
+        (two clicks). You can also mark yourself <b>undecided</b>, hold that there is <b>no fact of
+        the matter</b>, add a <b>…but</b> to hedge, or <b>skip</b>. Some questions instead ask you to
+        <b>mark every view you could argue</b>. Nothing you pick is graded right or wrong, and your
+        answers are stored only in this browser.
+      </p>
+    </div>
+  </section>
+
+  <!-- ============================ QUIZ ============================ -->
+  <section id="screen-quiz" class="screen">
+    <div class="topbar">
+      <div class="topbar-inner">
+        <div class="progress"><i id="progressFill"></i></div>
+        <span id="counter" class="counter"><b>0</b> / 0 answered</span>
+        <button id="resultsTopBtn2" class="link-btn">See results ›</button>
+      </div>
+    </div>
+    <div id="qhost"></div>
+    <p class="note" style="text-align:center">
+      Keyboard: number keys choose · <code>→</code>/<code>Enter</code> next · <code>←</code> back ·
+      <code>U</code> undecided · <code>F</code> no fact · <code>B</code> …but · <code>S</code> skip
+    </p>
+  </section>
+
+  <!-- ============================ RESULTS ============================ -->
+  <section id="screen-results" class="screen">
+    <div class="result-head"><span class="eyebrow">Your results</span></div>
+
+    <div id="archetype" class="archetype-card"></div>
+
+    <div class="svg-actions">
+      <button id="btnSVG" class="btn btn-ghost">⬇ Download SVG</button>
+      <button id="btnPNG" class="btn btn-ghost">⬇ Download PNG</button>
+      <button id="btnShare" class="btn btn-ghost">🔗 Copy shareable link</button>
+      <span class="spacer" style="flex:1"></span>
+      <button id="btnContinue" class="btn btn-ghost">Continue ›</button>
+      <button id="btnReset" class="btn btn-ghost">Start over</button>
+    </div>
+
+    <div class="section-title">Your compass</div>
+    <div id="compassHost" class="svg-card"></div>
+
+    <div class="section-title">Where you lean</div>
+    <div id="axes" class="axes"></div>
+
+    <div class="section-title">Every situation, and who you went with</div>
+    <div id="breakdown"></div>
+
+    <footer class="foot">
+      A toy. The axes and archetypes are interpretive and just for fun, not a verdict. The people in
+      it are invented; the ideas they carry are real.
+    </footer>
+  </section>
+
+</div>
+
+<script src="questions.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
