@@ -18,6 +18,8 @@
 </head>
 <body>
 <button id="themeToggle" class="theme-toggle" type="button" aria-label="Switch theme"><span class="ti">☾</span></button>
+<!-- read-only banner shown while viewing a shared result; populated by app.js -->
+<div id="viewBar" class="view-bar" hidden></div>
 <div class="wrap">
 
   <!-- ============================ INTRO ============================ -->
@@ -79,7 +81,7 @@
 
   <!-- ============================ RESULTS ============================ -->
   <section id="screen-results" class="screen">
-    <div class="result-head"><span class="eyebrow">Your results</span></div>
+    <div class="result-head"><span class="eyebrow" id="resultEyebrow">Your results</span></div>
 
     <div id="archetype" class="archetype-card"></div>
 
@@ -92,13 +94,13 @@
       <button id="btnReset" class="btn btn-ghost">Start over</button>
     </div>
 
-    <div class="section-title">Your compass</div>
+    <div class="section-title" id="titleCompass">Your compass</div>
     <div id="compassHost" class="svg-card"></div>
 
-    <div class="section-title">Where you lean</div>
+    <div class="section-title" id="titleLean">Where you lean</div>
     <div id="axes" class="axes"></div>
 
-    <div class="section-title">Every situation, and who you went with</div>
+    <div class="section-title" id="titleBreakdown">Every situation, and who you went with</div>
     <div id="breakdown"></div>
 
     <footer class="foot">

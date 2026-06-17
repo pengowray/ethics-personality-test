@@ -15,6 +15,7 @@
   --accent:    #9a5b2e;
   --accent-ink:#7a4622;
   --good:      #4d7c0f;
+  --friend:    #2f7d92;   /* the "You" overlay while comparing in view mode (a cool foil to the warm accent) */
   --shadow:    0 1px 2px rgba(60,45,25,.06), 0 8px 28px rgba(60,45,25,.08);
   --radius:    16px;
   --maxw:      760px;
@@ -30,6 +31,7 @@
   --accent:    #e0a35e;
   --accent-ink:#eab974;
   --good:      #9cc063;
+  --friend:    #74c4d6;
   --shadow:    0 1px 2px rgba(0,0,0,.3), 0 10px 30px rgba(0,0,0,.4);
 }
 
@@ -162,7 +164,112 @@ code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .
 
 .foot { font-family: ui-sans-serif, system-ui, sans-serif; font-size: 12.5px; color: var(--ink-soft); margin-top: 40px; border-top: 1px solid var(--line); padding-top: 16px; }
 
+/* ===================================================================
+   READ-ONLY "viewing a shared result" mode + compare overlay
+   =================================================================== */
+/* the persistent banner: sticky strip above the quiz topbar, clear of the
+   fixed theme toggle (which sits at z 50 with its own right padding) */
+.view-bar {
+  position: sticky; top: 0; z-index: 30;
+  background: color-mix(in srgb, var(--accent) 12%, var(--card));
+  border-bottom: 1px solid color-mix(in srgb, var(--accent) 32%, var(--line));
+  backdrop-filter: blur(8px);
+}
+.view-bar[hidden] { display: none; }
+.view-bar-inner {
+  max-width: var(--maxw); margin: 0 auto; padding: 9px 60px 9px 20px;
+  display: flex; align-items: center; gap: 9px 16px; flex-wrap: wrap;
+  font-family: ui-sans-serif, system-ui, sans-serif;
+}
+.vb-label { font-size: 13px; color: var(--accent-ink); font-weight: 600; }
+.vb-label b { font-weight: 800; }
+.vb-actions { display: flex; align-items: center; gap: 8px; margin-left: auto; flex-wrap: wrap; }
+.vb-primary {
+  font-family: inherit; font-size: 13.5px; font-weight: 700; cursor: pointer;
+  background: var(--accent); color: #fff; border: 1px solid transparent;
+  border-radius: 9px; padding: 7px 14px; box-shadow: var(--shadow);
+  transition: background .15s ease, transform .08s ease;
+}
+[data-theme="dark"] .vb-primary { color: #1a1710; }
+.vb-primary:hover { background: var(--accent-ink); }
+.vb-primary:active { transform: translateY(1px); }
+.vb-toggle {
+  font-family: inherit; font-size: 13px; font-weight: 600; cursor: pointer;
+  background: var(--card); color: var(--ink-soft); border: 1px solid var(--line2);
+  border-radius: 9px; padding: 6px 12px 6px 9px; display: inline-flex; align-items: center; gap: 7px;
+}
+.vb-toggle i {
+  width: 26px; height: 15px; border-radius: 999px; background: var(--line2);
+  position: relative; transition: background .15s ease; flex: none;
+}
+.vb-toggle i::after {
+  content: ""; position: absolute; top: 2px; left: 2px; width: 11px; height: 11px;
+  border-radius: 50%; background: #fff; transition: transform .15s ease;
+}
+.vb-toggle.on { color: var(--friend); border-color: var(--friend); }
+.vb-toggle.on i { background: var(--friend); }
+.vb-toggle.on i::after { transform: translateX(11px); }
+.vb-adopt {
+  font-family: inherit; font-size: 12.5px; font-weight: 600; cursor: pointer;
+  background: none; border: none; color: var(--accent-ink);
+  text-decoration: underline; text-underline-offset: 2px; padding: 6px 4px;
+}
+.vb-adopt:hover { color: var(--accent); }
+/* push the sticky quiz topbar below the (variable-height) banner */
+body.is-viewing .topbar { top: var(--viewbar-h, 0); }
+/* the keyboard-shortcut hint under the quiz is meaningless while read-only */
+body.is-viewing #screen-quiz > .note { display: none; }
+
+/* the small colour-dot "Them" / "You" labels reused across the overlay */
+.who {
+  position: relative; padding-left: 17px; font-family: ui-sans-serif, system-ui, sans-serif;
+  font-size: 11.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em;
+  color: var(--ink-soft); white-space: nowrap;
+}
+.who::before {
+  content: ""; position: absolute; left: 0; top: 50%; transform: translateY(-50%);
+  width: 11px; height: 11px; border-radius: 50%;
+}
+.who.them::before { background: var(--accent); }
+.who.you::before { background: var(--friend); }
+
+/* compare mode: both people's marks share one axis track */
+.axis-track .mark.them { background: var(--accent); }
+.axis-track .mark.you { background: var(--friend); width: 14px; height: 14px; }
+
+/* quiz: your own pick marked over their (accent) highlight */
+.opt.opt-you { outline: 2px dashed var(--friend); outline-offset: -2px; }
+.opt.opt-you .opt-state { color: var(--friend); }
+.qcompare {
+  display: flex; flex-wrap: wrap; align-items: baseline; gap: 5px 10px;
+  font-family: ui-sans-serif, system-ui, sans-serif; font-size: 13px; color: var(--ink-soft);
+  margin: 14px 2px 0; padding-top: 12px; border-top: 1px dashed var(--line2);
+}
+.qcompare .who { flex: none; }
+.qcompare .qcsep { color: var(--line2); }
+.qcompare i { color: var(--ink-soft); }
+
+/* results: comparison summary + per-cell "You" line */
+.compare-summary {
+  font-family: ui-sans-serif, system-ui, sans-serif; font-size: 13.5px; color: var(--ink-soft);
+  line-height: 1.6; background: var(--bg2); border: 1px solid var(--line);
+  border-radius: 10px; padding: 12px 14px; margin: 0 0 14px;
+}
+.compare-summary b { color: var(--ink); }
+.compare-summary .who { display: inline-flex; vertical-align: baseline; }
+.brk-you {
+  font-family: ui-sans-serif, system-ui, sans-serif; font-size: 13px; color: var(--ink-soft);
+  margin-top: 8px; padding-top: 8px; border-top: 1px dashed var(--line2);
+  display: flex; align-items: baseline; gap: 6px; flex-wrap: wrap;
+}
+.brk-you .who { flex: none; }
+.brk-you i { color: var(--ink-soft); }
+.brk-you.agree { border-top-color: var(--good); }
+.brk-you.disagree, .brk-you.partial { border-top-color: var(--friend); }
+
 @media (max-width: 560px) {
   .wrap { padding: 18px 14px 70px; }
   .qcard, .archetype-card { padding: 18px 16px; }
+  .view-bar-inner { padding-right: 20px; }
+  .vb-actions { width: 100%; margin-left: 0; }
 }
